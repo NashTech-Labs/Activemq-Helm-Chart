@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-activemq-ui
+spec:
+{{- $root := .Values.web}}
+  {{- with .Values.web.deployment }}
+  replicas: {{ .replicas }}
+  selector:
+    matchLabels:
+      io.kubernetes/app-name: {{ $.Release.Name }}-activemq-ui
+      io.activemq/version: "5.10"
+  template:
+    metadata:
+      labels:
+        io.kubernetes/app-name: {{ $.Release.Name }}-activemq-ui
+        io.activemq/version: "5.10"
+    spec:
+      volumes:
+        - name: activemq-ui-conf
+          configMap:
+            name: {{ $.Release.Name }}-activemq-ui-conf
+            defaultMode: 0644
+      containers:
+        - name: activemq-ui
+          image: {{ .image }}
+          {{- if .resources }}
+          resources: {{ .resources | toYaml | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: {{ $root.service.port }}
+              name: ui
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d/
+              name: activemq-ui-conf
+              #subPath: activemq-ui.conf
+          args:
+          - "sh"
+          - "-c"
+          - |
+            rm -f /etc/nginx/conf.d/default.conf
+            /docker-entrypoint.sh
+             nginx -g 'daemon off;'
+          {{- if .readinessProbe }}
+          readinessProbe: {{ .readinessProbe | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .livenessProbe }}
+          livenessProbe: {{ .livenessProbe | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .startupProbe }}
+          startupProbe: {{ .startupProbe | toYaml | nindent 12 }}
+          {{- end }}
+          {{- end }}

@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-activemq
+  annotations:
+    appName: "activemq-5.10.0"
+spec:
+  {{- $activemq:= .Values.activemq}}
+  {{- with .Values.deployment }}
+  {{- if .standalone }}
+  replicas: 1
+  {{- else }}
+  replicas: {{ .replicas }}
+  {{- end }}
+  serviceName: {{ $.Release.Name }}-activemq
+  selector:
+    matchLabels:
+      io.kubernetes/app-name: {{ $.Release.Name }}-activemq
+      io.activemq/version: "5.10"
+  template:
+    metadata:
+      labels:
+        io.kubernetes/app-name: {{ $.Release.Name }}-activemq
+        io.activemq/version: "5.10"
+    spec:
+      serviceAccountName: {{ default "default" .serviceAccountName | quote }}
+    {{- if .tolerations }}
+      tolerations: {{ .tolerations | toYaml | nindent 6}}
+    {{- end }}
+    {{- if .imagePullSecrets }}
+      imagePullSecrets: {{ .imagePullSecrets | toYaml | nindent 6 }}
+    {{- end }}
+      terminationGracePeriodSeconds: {{ default 10 .terminationGracePeriodSeconds }}
+      {{- with .affinity }}
+      {{- if or .node_affinity (ne .pod_anti_affinity "disabled")}}
+      affinity:
+      {{- end }}
+        {{- include "activemq.podantiaffinity" $ | indent 8}}
+        {{- if .node_affinity }}
+        nodeAffinity:
+{{ .nodeAffinity | toYaml | indent 10 }}
+        {{- end }}
+        {{- end }}
+      securityContext:
+        fsGroup: 1000
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ $.Release.Name }}-activemq-data
+        {{- if $activemq.extraVolumes }}
+        {{- $activemq.extraVolumes | toYaml | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: activemq
+          imagePullPolicy: {{ default "IfNotPresent" .imagePullPolicy }}
+          image: {{ .image }}
+          {{- if .readinessProbe }}
+          readinessProbe: {{ .readinessProbe | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .livenessProbe }}
+          livenessProbe: {{ .livenessProbe | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .resources }}
+          resources: {{ .resources | toYaml | nindent 12 }}
+          {{- end }}
+          env:
+          - name: ACTIVEMQ_BROKER_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          {{- if $activemq.extraEnvs }}
+          {{- $activemq.extraEnvs | toYaml | nindent 10 }}
+          {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ $.Release.Name }}-activemq-config
+            {{- include "activemq.secret" $ | indent 12 }}
+          ports:
+          - name: ui
+            containerPort: 8161
+          - name: openwire
+            containerPort: {{ $activemq.config.openwire_port | atoi }}
+          - name: amqp
+            containerPort: {{ $activemq.config.amqp_port | atoi }}
+          - name: stomp
+            containerPort: {{ $activemq.config.stomp_port | atoi }}
+          - name: mqtt
+            containerPort: {{ $activemq.config.mqtt_port | atoi }}
+          - name: ws
+            containerPort: {{ $activemq.config.ws_port | atoi }}
+          volumeMounts:
+            - mountPath: {{ printf "%s/kahadb" $activemq.config.data_directory }}
+              name: data
+            {{- if $activemq.extraVolumeMounts }}
+            {{- $activemq.extraVolumeMounts | toYaml | nindent 12 }}
+            {{- end }}
+{{ end }}

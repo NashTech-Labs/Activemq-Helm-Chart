@@ -1,0 +1,34 @@
+{{- if .Values.networkPolicy.web.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Release.Name }}-activemq-ui-policy
+spec:
+  podSelector:
+    matchLabels:
+      io.kubernetes/app-name: {{ $.Release.Name }}-activemq
+      io.activemq/version: "5.10"
+  policyTypes:
+    - Ingress
+    {{- with .Values.networkPolicy.web }}
+  ingress:
+    - from:
+    {{- if .namespaceSelector }}
+        - namespaceSelector: {{ .namespaceSelector | toYaml | nindent 12}}
+    {{- end }}
+    {{- if .ipBlock }}
+        - ipBlock: {{ .ipBlock | toYaml | nindent 12}}
+    {{- end }}
+    {{- if .podSelector }}
+        - podSelector: {{ .podSelector | toYaml | nindent 12}}
+    {{- end }}
+      ports:
+        {{- if .ports }}
+        {{- range .ports }}
+        - port: {{ . }}
+        {{- end }}
+        {{- else }}
+        - port: {{ $.Values.web.service.port }}
+    {{- end }}
+ {{- end }}
+ {{- end }}

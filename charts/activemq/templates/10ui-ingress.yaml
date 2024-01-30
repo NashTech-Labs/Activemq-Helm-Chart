@@ -1,0 +1,31 @@
+{{- if .Values.web.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-activemq-ui
+  {{- with .Values.web.ingress }}
+  {{- if .labels }}
+  labels: {{- .labels | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if .annotations }}
+  annotations: {{- .annotations | toYaml | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ required "Ingress Class Name is required" .ingressClassName }}
+  {{- if .tls }}
+  tls: {{- .tls | toYaml | nindent 2 }}
+  {{- end }}
+  rules:
+  - host: {{ required "Hostname is required" .hostname }}
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: {{ $.Release.Name }}-activemq-ui
+            port: 
+              number: {{ $.Values.web.service.port }}
+
+{{- end }}
+{{- end }}

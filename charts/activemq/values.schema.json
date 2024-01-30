@@ -1,0 +1,490 @@
+{
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "default": {},
+    "title": "Root Schema",
+    "required": [
+        "storage",
+        "activemq",
+        "deployment",
+        "web",
+        "externalService",
+        "networkPolicy"
+    ],
+    "properties": {
+        "storage": {
+            "type": "object",
+            "default": {},
+            "title": "The storage Schema",
+            "required": [
+                "storageClassName",
+                "storage"
+            ],
+            "properties": {
+                "storageClassName": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The storageClassName Schema"
+                },
+                "storage": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The storage Schema"
+                }
+            }
+        },
+        "activemq": {
+            "type": "object",
+            "default": {},
+            "title": "The activemq Schema",
+            "required": [
+                "external_secret",
+                "config",
+                "secure_broker",
+                "datastore"
+            ],
+            "properties": {
+                "external_secret": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The external_secret Schema",
+                    "required": [
+                        "enabled"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "The enabled Schema"
+                        },
+                        "secrets": {
+                            "type": "array",
+                            "default": [],
+                            "title": "The secrets Schema",
+                            "items": {
+                                "type": "string",
+                                "title": "A Schema"
+                            }
+                        }
+                    }
+                },
+                "config": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The config Schema",
+                    "required": [
+                        "data_directory",
+                        "data_dir_size",
+                        "data_tmp_size",
+                        "openwire_port",
+                        "amqp_port",
+                        "stomp_port",
+                        "mqtt_port",
+                        "ws_port"
+                    ],
+                    "properties": {
+                        "data_directory": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The data_directory Schema"
+                        },
+                        "data_dir_size": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The data_dir_size Schema"
+                        },
+                        "data_tmp_size": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The data_tmp_size Schema"
+                        },
+                        "openwire_port": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The openwire_port Schema"
+                        },
+                        "amqp_port": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The amqp_port Schema"
+                        },
+                        "stomp_port": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The stomp_port Schema"
+                        },
+                        "mqtt_port": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The mqtt_port Schema"
+                        },
+                        "ws_port": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The ws_port Schema"
+                        }
+                    }
+                },
+                "secure_broker": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The secure_broker Schema",
+                    "required": [
+                        "enabled"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "The enabled Schema"
+                        },
+                        "username": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The username Schema"
+                        },
+                        "password": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The password Schema"
+                        }
+                    }
+                },
+                "web": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The web Schema",
+                    "required": [],
+                    "properties": {
+                        "username": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The username Schema"
+                        },
+                        "password": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The password Schema"
+                        }
+                    }
+                },
+                "datastore": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The datastore Schema",
+                    "required": [
+                        "sql"
+                    ],
+                    "properties": {
+                        "sql": {
+                            "type": "boolean",
+                            "default": "",
+                            "title": "The password Schema"
+                        }
+                    }
+                }
+            }
+        },
+        "deployment": {
+            "type": "object",
+            "default": {},
+            "title": "The deployment Schema",
+            "required": [
+                "standalone",
+                "image"
+            ],
+            "properties": {
+                "standalone": {
+                    "type": "boolean",
+                    "default": false,
+                    "title": "The standalone Schema"
+                },
+                "image": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The image Schema"
+                },
+                "imagePullPolicy": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The imagePullPolicy Schema"
+                },
+                "serviceAccountName": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The serviceAccountName Schema"
+                },
+                "imagePullSecrets": {
+                    "type": "array",
+                    "default": [],
+                    "title": "The imagePullSecrets Schema",
+                    "items": {
+                        "type": "object",
+                        "default": {},
+                        "title": "A Schema",
+                        "required": [
+                            "name"
+                        ],
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "default": "",
+                                "title": "The name Schema"
+                            }
+                        }
+                    }
+                },
+                "replicas": {
+                    "type": "integer",
+                    "default": 0,
+                    "title": "The replicas Schema"
+                },
+                "terminationGracePeriodSeconds": {
+                    "type": "integer",
+                    "default": 10,
+                    "title": "The terminationGracePeriodSeconds Schema"
+                },
+                "affinity": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The affinity Schema",
+                    "required": [
+                        "node_affinity",
+                        "pod_anti_affinity"
+                    ],
+                    "properties": {
+                        "node_affinity": {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "The node_affinity Schema"
+                        },
+                        "nodeAffinity": {},
+                        "pod_anti_affinity": {
+                            "type": "string",
+                            "default": "",
+                            "pattern": "^(default|custom|disabled)$",
+                            "title": "The pod_anti_affinity Schema"
+                        },
+                        "podAntiAffinity": {}
+                    }
+                },
+                "tolerations": {},
+                "readinessProbe": {},
+                "livenessProbe": {}
+            }
+        },
+        "web": {
+            "type": "object",
+            "default": {},
+            "title": "The web Schema",
+            "required": [
+                "deployment",
+                "service",
+                "ingress"
+            ],
+            "properties": {
+                "deployment": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The deployment Schema",
+                    "required": [
+                        "replicas",
+                        "image"
+                    ],
+                    "properties": {
+                        "replicas": {
+                            "type": "integer",
+                            "default": 0,
+                            "title": "The replicas Schema"
+                        },
+                        "image": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The image Schema"
+                        },
+                        "resources": {
+                            "type": "object",
+                            "default": {},
+                            "title": "The resources Schema",
+                            "required": [],
+                            "properties": {
+                                "requests": {
+                                    "type": "object",
+                                    "default": {},
+                                    "title": "The requests Schema",
+                                    "required": [],
+                                    "properties": {
+                                        "cpu": {
+                                            "type": "string",
+                                            "default": "",
+                                            "title": "The cpu Schema"
+                                        },
+                                        "memory": {
+                                            "type": "string",
+                                            "default": "",
+                                            "title": "The memory Schema"
+                                        }
+                                    }
+                                },
+                                "limits": {
+                                    "type": "object",
+                                    "default": {},
+                                    "title": "The limits Schema",
+                                    "required": [],
+                                    "properties": {
+                                        "cpu": {
+                                            "type": "string",
+                                            "default": "",
+                                            "title": "The cpu Schema"
+                                        },
+                                        "memory": {
+                                            "type": "string",
+                                            "default": "",
+                                            "title": "The memory Schema"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "readinessProbe": {},
+                        "livenessProbe": {},
+                        "startupProbe": {}
+                    }
+                },
+                "service": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The service Schema",
+                    "required": [
+                        "type",
+                        "port"
+                    ],
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "default": "",
+                            "title": "The type Schema",
+                            "pattern": "^(LoadBalancer|ClusterIP|NodePort)$"
+                        },
+                        "port": {
+                            "type": "integer",
+                            "default": 8161,
+                            "title": "The port Schema"
+                        }
+                    }
+                },
+                "ingress": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The ingress Schema",
+                    "required": [
+                        "enabled"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "The enabled Schema"
+                        },
+                        "labels": {},
+                        "annotations": {},
+                        "ingressClassName": {},
+                        "tls": {},
+                        "hostname": {}
+                    }
+                }
+            }
+        },
+        "externalService": {
+            "type": "object",
+            "default": {},
+            "title": "The externalService Schema",
+            "required": [
+                "enabled"
+            ],
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "title": "The enabled Schema"
+                },
+                "type": {
+                    "type": "string",
+                    "default": "",
+                    "title": "The type Schema",
+                    "pattern": "^(LoadBalancer|NodePort)$"
+                }
+            }
+        },
+        "networkPolicy": {
+            "type": "object",
+            "default": {},
+            "title": "The networkPolicy Schema",
+            "required": [
+                "broker",
+                "web"
+            ],
+            "properties": {
+                "broker": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The broker Schema",
+                    "required": [
+                        "enabled"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "The enabled Schema"
+                        },
+                        "namespaceSelector": {},
+                        "ipBlock": {},
+                        "podSelector": {},
+                        "ports": {
+                            "type": "array",
+                            "default": [],
+                            "title": "The ports Schema",
+                            "items": {
+                                "type": "integer",
+                                "title": "A Schema"
+                            }
+                        }
+                    }
+                },
+                "web": {
+                    "type": "object",
+                    "default": {},
+                    "title": "The web Schema",
+                    "required": [
+                        "enabled"
+                    ],
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "default": false,
+                            "title": "The enabled Schema",
+                            "examples": [
+                                true
+                            ]
+                        },
+                        "namespaceSelector": {},
+                        "ipBlock": {},
+                        "podSelector": {},
+                        "ports": {
+                            "type": "array",
+                            "default": [],
+                            "title": "The ports Schema",
+                            "items": {
+                                "type": "integer",
+                                "default": 0,
+                                "title": "A Schema"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,203 @@
+storage:
+  storageClassName: default
+  storage: 1Gi
+  
+activemq:
+  external_secret:
+  ## External secret must contain ACTIVEMQ_WEBADMIN_USERNAME, ACTIVEMQ_WEBADMIN_PASSWORD for UI authentication.
+  ## It should also contain ACTIVEMQ_USERNAME, ACTIVEMQ_PASSWORD if secured broker is enabled.
+    enabled: false
+    secrets: []
+    # - broker-secret
+    # - ui-secret  
+
+  config:
+    data_directory: "/opt/activemq/data"
+    data_dir_size: "100"
+    data_tmp_size: "50"
+    openwire_port: "61616" 
+    amqp_port: "5672" 
+    stomp_port: "61613" 
+    mqtt_port: "1883" 
+    ws_port: "61614"
+    
+  secure_broker:
+    enabled: true
+    username: admin
+    password: "admin123456"
+  
+  web:
+    username: "admin"
+    password: "admin123456"
+  
+  extraEnvs:
+  - name: ACTIVEMQ_WEBADMIN_USERNAME
+    value: admin
+  - name: ACTIVEMQ_WEBADMIN_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        key: ACTIVEMQ_WEBADMIN_PASSWORD
+        name: activemq-secret
+
+  # extraVolumeMounts:
+  # - mountPath: /some/path
+  #   name: some-volume
+  #   subPath: some-path
+  
+  # extraVolumes:
+  # - name: some-volume
+  #   configMap:
+  #     name: some-configmap
+  #     items:
+  #     - key: somekey
+  #       path: filename
+
+  datastore:
+    sql: true
+    config:
+      username: "root"
+      password: "root12312121"
+      jdbc_connection_url: "jdbc:sqlserver://localhost:1433;databaseName=activemq;encrypt=true;trustServerCertificate=true;"
+      sql_port: 1433
+      sql_database: activemq
+      sql_hostname: localhost
+
+
+deployment:
+  standalone: true
+  image: dipayanp007/amq:5.10-beta
+  imagePullPolicy: IfNotPresent
+  serviceAccountName: "default"
+  imagePullSecrets: []
+  # - name: secret1
+  replicas: 2
+  terminationGracePeriodSeconds: 10
+  resources: {}
+    # requests:
+    #   cpu: 1000m
+    #   memory: 1Gi
+    # limits:
+    #   cpu: 2000m
+    #   memory: 2Gi
+  affinity:
+    node_affinity: false
+    nodeAffinity: {}
+      # requiredDuringSchedulingIgnoredDuringExecution:
+      #   nodeSelectorTerms:
+      #     - matchExpressions:
+      #         - key: anythin
+      #           operator: "In"
+      #           values:
+      #             - "abc"
+    pod_anti_affinity: default  # Or custom Or disabled
+    # podAntiAffinity:
+    #   requiredDuringSchedulingIgnoredDuringExecution:
+    #     - topologyKey: "kubernetes.io/hostname"
+    #       labelSelector:
+    #         matchLabels:
+    #           io.kubernetes/app-name: "some-value"
+    #           io.activemq/version: "value"
+  tolerations: {}
+  # - key: "key1"
+  #   operator: "Equal"
+  #   value: "value1"
+  #   effect: "NoSchedule"
+  # - key: "key1"
+  #   operator: "Equal"
+  #   value: "value1"
+  #   effect: "NoSchedule"
+  readinessProbe: {}
+  #   httpGet:
+  #     port: ui
+  #   initialDelaySeconds: 15
+  #   periodSeconds: 10
+  livenessProbe: {}
+  #   httpGet:
+  #     port: ui
+  #   initialDelaySeconds: 25
+  #   periodSeconds: 20
+
+web:
+  deployment:
+    replicas: 1
+    image: nginx:mainline-alpine3.17-slim
+    resources: 
+      requests:
+        cpu: 64m
+        memory: 50Mi
+      limits:
+        cpu: 128m
+        memory: 150Mi
+    readinessProbe:
+      httpGet:
+        port: ui
+      initialDelaySeconds: 15
+      periodSeconds: 10
+    livenessProbe:
+      httpGet:
+        port: ui
+      initialDelaySeconds: 25
+      periodSeconds: 20
+    startupProbe:
+      httpGet:
+        port: ui
+      initialDelaySeconds: 10
+      periodSeconds: 5
+  service:
+    type: LoadBalancer
+    port: 8161
+  ingress:
+    enabled: false
+    labels:
+      app: activemq-ui
+    annotations:
+      io.kubernetes/app-name: activemq-ui
+    ingressClassName: nginx
+    tls:
+    - hosts:
+      - activemqui.domain.in
+      secretName: activmq-ui-tls
+    hostname: activemqui.domain.in
+
+externalService:
+  enabled: false
+  type: LoadBalancer
+
+networkPolicy:
+  broker:
+    enabled: false
+    # namespaceSelector:
+    #   matchExpressions:
+    #     - key: kubernetes.io/metadata.name
+    #       operator: "In"
+    #       values:
+    #         - "default"
+    #         - "test"
+    # ipBlock:
+    #   cidr: 172.17.0.0/16
+    #   except:
+    #     - 172.17.1.0/24
+    # podSelector:
+    #   matchLabels:
+    #     role: frontend
+    # ports:
+    # - 123
+    # - 432
+  web:
+    enabled: false
+    # namespaceSelector:
+    #   matchExpressions:
+    #     - key: kubernetes.io/metadata.name
+    #       operator: "In"
+    #       values:
+    #         - "default"
+    #         - "test"
+    # ipBlock:
+    #   cidr: 172.17.0.0/16
+    #   except:
+    #     - 172.17.1.0/24
+    # podSelector:
+    #   matchLabels:
+    #     role: frontend
+    # ports:
+    # - 123

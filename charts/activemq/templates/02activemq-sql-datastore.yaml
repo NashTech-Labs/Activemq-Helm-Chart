@@ -1,0 +1,21 @@
+{{- if and .Values.activemq.datastore.sql (and (not .Values.activemq.external_secret.enabled) (not .Values.activemq.extraEnvs)) }}
+{{- with .Values.activemq.datastore.config }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $.Release.Name }}-activemq-sql-datastore-secrets
+data:
+  {{- if and (empty .jdbc_connection_url) (or (empty .sql_port ) ( empty .sql_database) (empty .sql_hostname))}}
+  {{ fail "Either jdbc string or sql port, database and hostname should be configured"}}
+  {{- end}}
+  {{- if .jdbc_connection_url }}
+  ACTIVEMQ_SQL_JDBC_CONNECTION_STRING: {{ .jdbc_connection_url | b64enc }}
+  {{- else }}
+  ACTIVEMQ_SQL_DATABASE: {{ .sql_database | b64enc }}
+  ACTIVEMQ_SQL_HOSTNAME: {{ .sql_hostname | b64enc }}
+  ACTIVEMQ_SQL_PORT: {{ toString .sql_port | b64enc }}
+  {{- end }}
+  ACTIVEMQ_SQL_USERNAME: {{ required "SQL Server username is required" .username | b64enc }}
+  ACTIVEMQ_SQL_PASSWORD: {{ required "SQL Server password is required" .password | b64enc }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-activemq-data
+spec:
+  accessModes:
+  - "ReadWriteMany"
+  {{- with .Values.storage }}
+  storageClassName: {{ .storageClassName }}
+  resources:
+    requests:
+      storage: {{ .storage }}
+  {{ end }}
